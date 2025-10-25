@@ -1,0 +1,78 @@
+"""
+ETL Pipeline Script
+Author: Tanishka Narkhede
+Description: This script automates the ETL process:
+             1. Extract: Load raw CSV data
+             2. Transform: Clean, encode, and scale features
+             3. Load: Save processed data to a new CSV
+Dependencies: pandas, scikit-learn
+"""
+
+# ------------------------------
+# Import Libraries
+# ------------------------------
+import pandas as pd
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.impute import SimpleImputer
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+import os
+
+# ------------------------------
+# File Paths
+# ------------------------------
+RAW_DATA_PATH = "data/raw/sales_data.csv"  # Replace with your raw CSV
+PROCESSED_DATA_PATH = "data/processed/sales_clean.csv"
+
+# ------------------------------
+# Step 1: Extract (Load Data)
+# ------------------------------
+print("Loading raw data...")
+data = pd.read_csv(RAW_DATA_PATH)
+print("Raw data preview:")
+print(data.head())
+
+# ------------------------------
+# Step 2: Transform (Preprocess Data)
+# ------------------------------
+
+# Define columns
+numerical_features = ['Age', 'Salary', 'Experience']   # Update based on your dataset
+categorical_features = ['Gender', 'Department']       # Update based on your dataset
+
+# Numerical preprocessing pipeline
+num_pipeline = Pipeline(steps=[
+    ('imputer', SimpleImputer(strategy='mean')),     # Fill missing values with mean
+    ('scaler', StandardScaler())                     # Scale features
+])
+
+# Categorical preprocessing pipeline
+cat_pipeline = Pipeline(steps=[
+    ('imputer', SimpleImputer(strategy='most_frequent')), # Fill missing values
+    ('encoder', OneHotEncoder(handle_unknown='ignore'))   # One-hot encode categories
+])
+
+# Combine numerical and categorical pipelines
+preprocessor = ColumnTransformer(transformers=[
+    ('num', num_pipeline, numerical_features),
+    ('cat', cat_pipeline, categorical_features)
+])
+
+# Apply transformations
+print("Transforming data...")
+data_transformed = preprocessor.fit_transform(data)
+
+# Convert back to DataFrame with proper column names
+cat_columns = preprocessor.named_transformers_['cat']['encoder'].get_feature_names_out(categorical_features)
+all_columns = numerical_features + list(cat_columns)
+data_transformed_df = pd.DataFrame(data_transformed, columns=all_columns)
+
+print("Transformed data preview:")
+print(data_transformed_df.head())
+
+# ------------------------------
+# Step 3: Load (Save Data)
+# ------------------------------
+os.makedirs(os.path.dirname(PROCESSED_DATA_PATH), exist_ok=True)
+data_transformed_df.to_csv(PROCESSED_DATA_PATH, index=False)
+print(f"Processed data saved to '{PROCESSED_DATA_PATH}'")
