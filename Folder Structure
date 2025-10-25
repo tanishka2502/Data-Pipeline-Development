@@ -1,0 +1,14 @@
+ETL-Pipeline-Project/
+│
+├── data/
+│   ├── raw/               # Place your raw CSV files here
+│   └── processed/         # Cleaned/transformed files will be saved here
+│
+├── notebooks/
+│   └── ETL_pipeline.ipynb # Notebook version of the ETL pipeline
+│
+├── scripts/
+│   └── etl_pipeline.py    # Python script version of the pipeline
+│
+├── requirements.txt       # Python dependencies
+└── README.md              # Project description & instructions
