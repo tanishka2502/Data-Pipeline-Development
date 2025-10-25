@@ -21,8 +21,8 @@ import os
 # ------------------------------
 # File Paths
 # ------------------------------
-RAW_DATA_PATH = "data/raw/sales_data.csv"  # Replace with your raw CSV
-PROCESSED_DATA_PATH = "data/processed/sales_clean.csv"
+RAW_DATA_PATH = "data/raw/sales.csv"  # Replace with your raw CSV
+PROCESSED_DATA_PATH = "data/processed/sales.csv"
 
 # ------------------------------
 # Step 1: Extract (Load Data)
